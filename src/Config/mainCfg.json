@@ -1,1 +1,22 @@
-
+{
+	"ownerId": "743689039026323486",
+	"defPrefix": "x!",
+	"testServerId": ["872418898484555857"],
+	"cmdDir": "../../commands",
+	"embed": {
+		"defColor": "#cd2bd9",
+		"footer": "NetCord"
+	},
+	"commands": {
+		"hidden": [],
+		"disabled": [],
+		"defCooldown": 3000
+	},
+	"presence": {
+		"type": "PLAYING",
+		"name": "Raid Shadow Lagends",
+		"status": "online"
+	},
+	"mongoURI": "",
+	"websocketPORT": 3028
+}
