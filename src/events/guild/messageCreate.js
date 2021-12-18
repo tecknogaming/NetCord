@@ -1,4 +1,20 @@
-ent.commands.get(client.aliases.get(cmd));
+const config = require("../../Config/mainCfg.json");
+const date = require("date-and-time");
+
+module.exports = async (client, message) => {
+	if (message.author.bot) return;
+	//if (message.channel.partial) await message.channel.fetch();
+	//if (message.partial) await message.fetch();
+	const prefix = config.defPrefix;
+	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})`);
+	if (!prefixRegex.test(message.content)) return;
+	const [,
+		mPrefix] = message.content.match(prefixRegex);
+	const args = message.content.slice(mPrefix.length).trim().split(/ +/).filter(Boolean);
+	const cmd = args.length > 0 ? args.shift().toLowerCase(): null;
+
+	let command = client.commands.get(cmd);
+	if (!command) command = client.commands.get(client.aliases.get(cmd));
 	if (command) {
 		let {
 			name,
