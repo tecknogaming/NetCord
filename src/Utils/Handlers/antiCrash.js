@@ -1,8 +1,7 @@
 const {
 	File,
 	log
-} = require("./log4me.js");
-//const { log } = new Log4me("antiCrash", "./logs.txt");
+} = require("../log4me.js");
 File("./data.log")
 
 let fs = require('fs')
@@ -15,8 +14,6 @@ module.exports = (client) => {
 	process.on("uncaughtException", (err, origin) => {
 		console.log(' [antiCrash] :: Uncaught Exception/Catch');
 		console.log(err, origin);
-		//log()
-		//fs.writeFileSync("logs.txt", err + origin)
 		log(err)
 	})
 	process.on('uncaughtExceptionMonitor', (err, origin) => {
