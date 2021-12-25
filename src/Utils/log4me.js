@@ -1,43 +1,46 @@
-const fs = require("fs");
-const DAT = require("date-and-time");
-
-function svToFile(fl, data) {
-	fs.writeFileSync(`${dir}/${fl}${format}`, data)
-}
-
-function time() {
-	const dt = new Date();
-	const compiledDate = date.compile('MM-DD-YY');
-	const time = date.format(dt, compiledDate);
-	return time
-}
+const fs = require("fs")
+let path = "";
+let data = "";
 
 
-class Log4me {
-	constructor(author, dir) {
-		if (!author) return new TypeError("NO_LOGAUTHOR_PROVIDED");
-		if (!dir) return new TypeError("NO_FILEDIRECTORY_PROVIDED");
-		try {
-			this.author = author;
-			this.dir = dir;
 
-			//console.log(this.dir)
-		} catch(e) {
-			console.log("ERROR: " + e)
-		}
+function File(filePath) {
+
+	try {
+		path = filePath;
+
+		if (!fs.existsSync(filePath))
+			fs.writeFileSync(filePath, "");
+		data = fs.readFileSync(filePath).toString();
+
+	} catch (err) {
+		console.log()
 	}
+};
 
-	log(str) {
-		try {
-			console.log(this.dir)
-			const now = time
-			//svToFile(this.file, `\n[${now} || ${this.author}] ${str}`)
 
-			fs.writeFileSync(this.dir, `\n[${now} || ${this.author}] ${str.toString()}`)
-		} catch(e) {
-			console.log(e)
-		}
+function log(str) {
+	try {
+
+		const now = Date(Date.now());
+
+
+		time = now.toString() //time
+		console.log()
+		fs.writeFileSync(path, `${data}\n[${time} || ${this.author || "ERROR" }]\n ${str.toString()}\n\n`)
+	} catch (e) {
+		console.log(e)
 	}
 }
 
-module.exports.Log4me = Log4me;
+
+
+module.exports.File = File;
+module.exports.log = log;
+
+/*
+  THIS CODE IS CREATED BY A PERSON NAMED SANIKAVA CHECK HIM OUT
+  LINKS:
+  https://github.com/sanikava
+  https://discord.com/rPFyqgjH6p
+*/
