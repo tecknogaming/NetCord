@@ -1,11 +1,20 @@
-const config = require("../../Config/mainCfg.json");
+st config = require("../../Config/mainCfg.json");
 const date = require("date-and-time");
+const log4me = require("../../Utils/log4me.js");
+const mongo = require("../../Utils/mongo.js");
+const GuildSchema = require("../../Schema/guildSchema.js");
+const {
+	MessageEmbed
+} = require("discord.js");
+const guildPrefixes = {};
 
 module.exports = async (client, message) => {
-	if (message.author.bot) return;
-	//if (message.channel.partial) await message.channel.fetch();
-	//if (message.partial) await message.fetch();
-	const prefix = config.defPrefix;
+	log4me.set("./data.log", "commandhandler");
+
+	if (!message.guild || !message.channel || message.author.bot) return;
+	if (message.channel.partial) await message.channel.fetch();
+	if (message.partial) await message.fetch();
+	const prefix = guildPrefixes[message.guild.id] || config.defPrefix;
 	const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})`);
 	if (!prefixRegex.test(message.content)) return;
 	const [,
@@ -18,16 +27,32 @@ module.exports = async (client, message) => {
 	if (command) {
 		let {
 			name,
+			usage = "",
+			minArgs = 0,
+			maxArgs = null,
 			testCommand = false,
 			ownerOnly = false,
+			disabled = false,
+			disabledReasson = "",
 			aliases,
 			run
 		} = command;
-		if (ownerOnly && message.author.id !== mainCfg.ownerId) {
+
+		if (args.length < minArgs|| args.length > maxArgs) {
+			return message.reply({
+				embeds: [
+					new MessageEmbed()
+					.setColor("#242424")
+					.setTitle("SyntaxError")
+					.setDescription(`The Correct Usage For This Command Is: \`${prefix}${name} ${usage}\``)
+				]})
+		}
+
+		if (ownerOnly && message.author.id !== config.ownerId) {
 			return message.reply(`the command **${name}** is an owner only command!`)
 		}
 
-		if (testCommand && !message.guild.id.includes(mainCfg.testServerId)) {
+		if (testCommand && !message.guild.id.includes(config.testServerId)) {
 			return message.reply(`The command **${name}** is only for test servers`);
 		}
 
@@ -35,20 +60,31 @@ module.exports = async (client, message) => {
 		const compiledDate = date.compile('ddd, MMM DD YYYY | hh:mm A');
 		const time = date.format(dt, compiledDate);
 
-		run(message, args, args.join(" ").split("++").filter(Boolean), message.member, args.join(" "), client);
+		if (disabled) return mesdage.reply(`That command is dissabled\nReasson: ${disabledReasson || "No reasson"}`)
 
-
-		console.log(`+++++++++++++++++++++++++++++++++++++`.brightGreen)
-		console.log(`Command: ${command.name}`.brightGreen)
-		console.log(`Runned by: ${message.author.tag} / ${message.author.id}`.brightGreen)
-		console.log(`Guild Id: ${message.guild.name} / ${message.guild.id}`.brightGreen)
-		console.log(`Channel Id: #${message.channel.name} / ${message.channel.id}`.brightGreen)
-		console.log(`Message Id: ${message.id}`.brightGreen)
-		console.log(`Time: ${time}`.brightGreen)
-		console.log(`+++++++++++++++++++++++++++++++++++++`.brightGreen)
+		run(message, args, args.join(" "), message.member, client);
+		log4me.log(`CommandRuned: ${name}, By: ${message.author.tag}`, false)
 	}
 }
 
 function escapeRegex(str) {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`);
+}
+
+module.exports.loadPrefixs = async (client) => {
+	await mongo().then(async mongoose => {
+		try {
+			for (const guild of client.guilds.cache) {
+				const guildId = guild[1].id
+
+				const result = await GuildSchema.findOne({
+					id: guildId
+				});
+				guildPrefixes[guildId] = result ? result.prefix: config.defPrefix;
+			}
+
+		} finally {
+			mongoose.connection.close();
+		}
+	})
 }
