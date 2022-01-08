@@ -1,4 +1,4 @@
-st config = require("../../Config/mainCfg.json");
+const config = require("../../Config/mainCfg.json");
 const date = require("date-and-time");
 const log4me = require("../../Utils/log4me.js");
 const mongo = require("../../Utils/mongo.js");
