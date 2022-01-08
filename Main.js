@@ -3,6 +3,8 @@ const Discord = require("discord.js");
 const mainCfg = require("./src/config/mainCfg.json");
 const loadevents = require("./src/Utils/Handlers/events.js");
 const loadCmd = require("./src/utils/Handlers/loadCmd.js");
+const antiCrash = require("./src/utils/Handlers/antiCrash.js");
+const {loadPrefixs} = require("./src/events/guild/messageCreate.js");
 const colors = require("colors");
 
 const client = new Discord.Client({
@@ -35,7 +37,10 @@ const client = new Discord.Client({
 
 client.commands = new Discord.Collection();
 client.aliases = new Discord.Collection();
+client.deactivationCode = "";
 loadCmd(client)
+loadPrefixs(client)
 loadevents(client)
+antiCrash(client)
 
 client.login(process.env.TOKEN)
