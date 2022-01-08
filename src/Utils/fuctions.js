@@ -1,11 +1,13 @@
 const { MessageEmbed } = require("discord.js");
 const config = require("../Config/mainCfg.json");
 
+
 module.exports.setStatus = setStatus;
 module.exports.genId = genId;
 
 function replaceMessage(msg, o = {}) {
-	const opt = Object(o);	return String(msg)
+	const opt = Object(o);
+	return String(msg)
 	  .replace(/%{prefix}%/gi, opt && opt.prefix ? opt.prefix : "%{prefix}")
 	  .replace(/%{pingedUser}%/gi, opt && opt.pingedUser ? opt.pingedUser : "%{pingedUser}%")
 	  .replace(/%{command}%/gi, opt && opt.command ? opt.command : "%{command}%")
@@ -91,6 +93,13 @@ function genId(length) {
 		"9",
 		"-",
 		"_",
+		"=",
+		"/",
+		"@",
+		"$",
+		"!",
+		"¡",
+		"/",
 	];
 	
 	let id = ""
